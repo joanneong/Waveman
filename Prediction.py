@@ -102,8 +102,8 @@ def load_graph(frozen_graph_filename):
     '''
     read parameters from the PB file(model)
     '''
-    with tf.gfile.GFile(frozen_graph_filename, "rb") as f:
-        graph_def = tf.GraphDef()
+    with tf.io.gfile.GFile(frozen_graph_filename, "rb") as f:
+        graph_def = tf.compat.v1.GraphDef()
         graph_def.ParseFromString(f.read())
 
     with tf.Graph().as_default() as graph:
@@ -127,7 +127,7 @@ def predict(model, SpeciesDict, ImageList, n):
 
     num, pics = img_utils.read_and_decode_single_example(ImageList)
     
-    with tf.Session(graph=graph) as sess:
+    with tf.compat.v1.Session(graph=graph) as sess:
         a=0
         res=[]
         ProbMatrix = np.zeros((0,len(SpeciesDict)), dtype=None)

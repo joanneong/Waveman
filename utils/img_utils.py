@@ -1,3 +1,4 @@
+import imageio
 import os
 import pylab
 import numpy as np
@@ -21,7 +22,7 @@ def ConvJPG(filename, array, framerate, width, height, train=False):
     pylab.axis('off')
     pylab.axes([0., 0., 1., 1.], frameon=False, xticks=[], yticks=[])
     plt.specgram(array, Fs=framerate, scale_by_freq=True, sides='default', 
-                 noverlap=474, NFFT=512, cmap='jet')
+                 noverlap=474, NFFT=512, cmap='autumn')
     if framerate < 100000:
         yaxis = 19200
     else:
@@ -48,7 +49,7 @@ def read_and_decode_single_example(filename):
 
     res = []
     for i in range(len(content)):
-        lena = misc.imread(content[i]).astype(np.int16)
+        lena = imageio.imread(content[i]).astype(np.int16)
         lena_norm = (lena - 128) / 128.0
         res.append(lena_norm)
     res = np.array(res)

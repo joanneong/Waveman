@@ -160,7 +160,7 @@ def CheckAudio(audio_list):
     Check audio file and coresponding species and folder!
     '''
 
-    audio_list = pd.read_excel(audio_list)
+    audio_list = pd.read_csv(audio_list)
     IDs = []
     AudioFiles = []
     

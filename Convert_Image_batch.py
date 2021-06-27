@@ -51,7 +51,9 @@ def main():
     args = parse_args(Path.replace('\\','/'))
 
     # check audio file in list
+    print("\nChecking audio file list...")
     AudioFiles = ops.CheckAudio(args.AudioList)
+    print("\nAudio file list check completed")
 
     if args.ImageWidth < 1:
         print('\n-------------->')
@@ -91,7 +93,7 @@ def main():
         log.info('The images store in the folder: {}\n'.format(Dir))
 
         log = ops.Logs(log, LogFile, logging.INFO)
-        log.info('Creat folders for assign images!')
+        log.info('Created folders for assigning images!')
         # prepare folder for manual assigning images
         ops.ChkDir(Dir+'/nosignal') # store no signal episodes
         ops.ChkDir(Dir+'/weak') # store weak signal episodes

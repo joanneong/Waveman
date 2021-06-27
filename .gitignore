@@ -1,0 +1,10 @@
+# Project files
+TMP/
+image/
+logs/
+
+# Other utilities
+env/
+
+# Mac-specific files
+.DS_Store
