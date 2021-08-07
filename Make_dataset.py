@@ -9,6 +9,7 @@ Please provide two files:
 import os
 import sys
 import time
+import json
 import logging
 import argparse
 import shutil
@@ -107,7 +108,8 @@ def ChkSpecies(SpeciesDict, imagelist):
             if row['Species'] not in SpeciesDict: # check species whether in list
                 print('Error! Cannot find {} in species list file!'\
                       .format(row['Species']))
-                print('Please add the species in the list or verify the spell!')
+                print('Please add the species in the list or verify the spelling!')
+                print(json.dumps(SpeciesDict, indent = 4))
                 sys.exit(1)
 
 def Assign(SpeciesFolders, log, args):
@@ -176,7 +178,7 @@ def make_tf(tranDir, validDir, tfDir, files, args, log):
 
     for file in files:
 
-        writer = tf.python_io.TFRecordWriter(tfDir+'/'+file) # write
+        writer = tf.io.TFRecordWriter(tfDir+'/'+file) # write
 
         if file == 'train.tfrecords':
             log.info('Start to make tfrecords for training...')

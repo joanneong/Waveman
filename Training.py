@@ -127,38 +127,34 @@ def parse_args(path):
 
     return args
 
+def decode_fn(serialized_example):
+    return tf.io.parse_single_example(serialized_example,
+                                       features={
+                                           'label': tf.io.FixedLenFeature([], tf.int64),
+                                           'img_raw': tf.io.FixedLenFeature([], tf.string),
+                                       })  # read image and label
+
 def read_and_decode(filename, args, shuffle=True): 
     '''
     decode tfrecords
     '''
-    filename_queue = tf.train.string_input_producer([filename])  # generate a queue
+    raw_dataset = tf.data.TFRecordDataset([filename]).map(decode_fn) # generate a queue
 
-    reader = tf.TFRecordReader()
-    _, serialized_example = reader.read(filename_queue) 
-    features = tf.parse_single_example(serialized_example,
-                                       features={
-                                           'label': tf.FixedLenFeature([], tf.int64),
-                                           'img_raw': tf.FixedLenFeature([], tf.string),
-                                       })  # read image and label
-
-    label = tf.cast(features['label'], tf.int32)
-    img = tf.decode_raw(features['img_raw'], tf.uint8)
-    img = tf.reshape(img, [args.TFImageWidth, args.TFImageHeight, args.Channel])
-    img = tf.cast(img, tf.float32)
-    img = (img - 128) / 128.0
+    # features = next(iter(raw_dataset.map(decode_fn)))
+    # label = tf.cast(features['label'], tf.float32)
+    # img = tf.io.decode_raw(features['img_raw'], tf.uint8)
+    # img = tf.reshape(img, [args.TFImageWidth, args.TFImageHeight, args.Channel])
+    # img = tf.cast(img, tf.float32)
+    # img = (img - 128) / 128.0
 
     if shuffle:
-        imgs, label_batch = tf.train.shuffle_batch(
-            [img, label],
-            batch_size=args.BatchSize,
-            capacity=20000,
-            min_after_dequeue=args.MinAfterQueue)
+        shuffled_dataset = raw_dataset.shuffle(args.MinAfterQueue).batch(args.BatchSize)
     else:
-        imgs, label_batch = tf.train.batch(
-            [img, label],
-            batch_size=args.BatchSize,
-            capacity=20000)
+        shuffled_dataset = raw_dataset.batch(args.BatchSize)
 
+    print(shuffled_dataset)
+    imgs = shuffled_dataset.img_raw
+    label_batch = shuffled_dataset['label']
     label_batch = tf.one_hot(label_batch, depth=args.ClassNum)
     label_batch = tf.cast(label_batch, dtype=tf.int32)
     label_batch = tf.reshape(label_batch, [args.BatchSize, args.ClassNum])
